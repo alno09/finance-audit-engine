@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum DocumentStatus {
+  UPLOADED
+  QUEUED
+  EXTRACTING
+  EXTRACTED
+  AUDITING
+  NEEDS_REVIEW
+  APPROVED
+  EXTRACTION_FAILED
+  AUDIT_FAILED
+}
+
+enum OutboxStatus {
+  PENDING
+  PUBLISHED
+  FAILED
+}
+
+enum ExtractionMethod {
+  PDF_TEXT
+  OCR
+}
+
+enum AuditStatus {
+  PENDING
+  RUNNING
+  PASSED
+  NEEDS_REVIEW
+  FAILED
+}
+
+enum AuditSeverity {
+  INFO
+  WARNING
+  ERROR
+}
+
+enum AuditFindingType {
+  LINE_TOTAL_MISMATCH
+  SUBTOTAL_MISMATCH
+  TOTAL_MISMATCH
+  MISSING_VENDOR
+  MISSING_INVOICE_NUMBER
+  DUPLICATE_INVOICE
+}
+
+model OutboxEvent {
+  id          String       @id @default(cuid())
+
+  type        String
+  aggregateId String
+  payload     Json
+
+  status      OutboxStatus @default(PENDING)
+
+  attempts    Int          @default(0)
+  lastError   String?
+
+  createdAt   DateTime     @default(now())
+  publishedAt DateTime?
+
+  @@index([status, createdAt])
+}
+
+model Extraction {
+  id             String           @id @default(cuid())
+  documentId     String           @unique
+  method         ExtractionMethod
+  rawText        String
+  characterCount Int
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  document       Document         @relation(fields: [documentId], references: [id], onDelete: Cascade)
+}
+
+model Document {
+  id           String         @id @default(cuid())
+  filename     String
+  mimeType     String
+  sha256       String         @unique
+  storageKey   String?
+  status       DocumentStatus @default(UPLOADED)
+  errorMessage String?
+
+  extraction   Extraction?
+  invoice      Invoice?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Invoice {
+  id            String   @id @default(cuid())
+  documentId    String   @unique
+
+  invoiceNumber String?
+  vendorName    String?
+  customerName  String?
+
+  invoiceDate   DateTime?
+  dueDate       DateTime?
+
+  currency      String   @default("IDR")
+
+  subtotal      Decimal?
+  tax           Decimal?
+  total         Decimal?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  document      Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  lineItems     InvoiceLineItem[]
+  audit         Audit?
+
+  @@index([invoiceNumber])
+  @@index([vendorName])
+}
+
+model InvoiceLineItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+
+  description String
+
+  quantity    Decimal?
+  unitPrice   Decimal?
+  total       Decimal?
+
+  createdAt   DateTime @default(now())
+
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+model Audit {
+  id         String      @id @default(cuid())
+  invoiceId  String      @unique
+  status     AuditStatus @default(RUNNING)
+
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  invoice    Invoice     @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  findings   AuditFinding[]
+}
+
+model AuditFinding {
+  id            String           @id @default(cuid())
+  auditId       String
+  type          AuditFindingType
+  severity      AuditSeverity
+
+  message       String
+
+  expectedValue String?
+  actualValue   String?
+
+  createdAt     DateTime         @default(now())
+
+  audit         Audit            @relation(fields: [auditId], references: [id], onDelete: Cascade)
+
+  @@index([auditId])
+  @@index([type])
+}

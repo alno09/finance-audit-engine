@@ -1,0 +1,69 @@
+# Dependencies
+/node_modules/
+
+# Compiled output
+/dist/
+/build/
+*.tsbuildinfo
+
+# Generated Prisma Client
+/src/generated/prisma/
+
+# Generated Prisma agent skills
+/.agents/skills/prisma-*/
+/.claude/skills/prisma-*
+/.windsurf/skills/prisma-*
+
+# Local document storage
+/storage/
+
+# Logs
+/logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+
+# Tests
+/coverage/
+/.nyc_output/
+
+# IDEs and editors
+/.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Temporary files and caches
+.temp
+.tmp
+.eslintcache
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
