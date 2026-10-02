@@ -93,3 +93,12 @@ The migration target retains Prisma CLI as a build dependency and runs separatel
 ## Reverse proxy and TLS
 
 For an internet-facing server, place Caddy, Nginx, Traefik, or a cloud load balancer in front of `APP_PORT`. Terminate TLS there and expose only ports 80/443 publicly. Keep PostgreSQL and Redis private.
+
+Set `TRUSTED_PROXIES` to the actual proxy IPs or CIDRs so the upload quota sees
+the visitor IP. Leave it blank for direct access. Only trust proxies you control
+that overwrite forwarded headers; overly broad ranges allow forged client IPs.
+Check this configuration against your hosting provider before deploying.
+
+Upload quotas are shared in Redis and reset at midnight UTC. Compose enables
+Redis AOF persistence to retain counters across restarts; deleting Redis data
+resets quotas as well as queue data.

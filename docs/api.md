@@ -18,6 +18,18 @@ The multipart field must be named `file`.
 - Maximum size: 10 MB
 - Accepted MIME types: `application/pdf`, `image/jpeg`, `image/png`
 - Documents are deduplicated by SHA-256 content hash
+- Two upload attempts per IP per UTC calendar day by default (reset at 07:00 WIB).
+  Configure this with `UPLOAD_DAILY_LIMIT`.
+  Invalid files, missing files, and duplicate uploads also consume attempts.
+  Requests over quota return `429` before multipart parsing, with a `Retry-After`
+  header and JSON `retryAfter` in seconds. Redis failures return `503` and uploads
+  remain blocked until the quota service recovers.
+- `X-Upload-Limit`, `X-Upload-Remaining`, and `X-Upload-Reset` response headers expose the quota.
+
+This is an IP quota, not a user quota: visitors sharing an IP share two attempts,
+and changing IPs can bypass the limit. It is not protection against distributed
+traffic attacks. Use only sample documents on the public demo: document detail
+endpoints currently have no authentication.
 
 Although images are accepted at upload time, the current processing worker uses PDF text extraction and does not yet invoke OCR. Use text-based PDF invoices for the complete pipeline.
 
