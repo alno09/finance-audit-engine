@@ -2,6 +2,14 @@
 
 Finance Audit Engine is an asynchronous NestJS service for ingesting invoice documents, extracting structured invoice data with Gemini, and applying deterministic financial audit rules. PostgreSQL stores workflow data, Redis and BullMQ coordinate background jobs, and an outbox publisher keeps document creation separate from queue delivery.
 
+## Live Demo
+
+The application is deployed and available for testing at:
+
+**https://audit.domain.online**
+
+The demo uses the same asynchronous processing flow described below, including document upload, background processing, structured extraction, and audit result retrieval.
+
 ## What It Does
 
 1. Accepts an invoice upload and stores it on the local filesystem.
