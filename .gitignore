@@ -54,6 +54,25 @@ lerna-debug.log*
 .env.*
 !.env.example
 
+# Local credentials and secret material
+.aws/
+.azure/
+.gcloud/
+.npmrc
+credentials
+credentials.*
+*credentials.json
+service-account*.json
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+
 # Temporary files and caches
 .temp
 .tmp

@@ -14,6 +14,23 @@ storage
 .env
 .env.*
 !.env.example
+.aws
+.azure
+.gcloud
+.npmrc
+credentials
+credentials.*
+*credentials.json
+service-account*.json
+*.pem
+*.key
+*.p8
+*.p12
+*.pfx
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
 
 *.log
 *.tsbuildinfo
