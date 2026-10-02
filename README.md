@@ -6,7 +6,7 @@ Finance Audit Engine is an asynchronous NestJS service for ingesting invoice doc
 
 The application is deployed and available for testing at:
 
-**https://audit.domain.online**
+**[This link](https://github.com/alno09/finance-audit-engine).**
 
 The demo uses the same asynchronous processing flow described below, including document upload, background processing, structured extraction, and audit result retrieval.
 
